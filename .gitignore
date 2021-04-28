@@ -3,6 +3,5 @@ __pycache__/
 /venv
 /input_data
 /output_data
-main.py
 fourth_task.py
 fifth_task.py
