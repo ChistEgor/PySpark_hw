@@ -17,5 +17,8 @@ info_cinema = read_data('title.basics.tsv')
 info_ratings = read_data('title.ratings.tsv')
 info_staff = read_data('title.principals.tsv')
 info_tv_series = read_data('title.episode.tsv')
-info_director_writer = read_data('title.crew.tsv')
+info_crew = read_data('title.crew.tsv')
 
+
+def write_to_csv(data, file):
+    return data.coalesce(1).write.mode('overwrite').save(f'output_data/{file}', format='csv')

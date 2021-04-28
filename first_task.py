@@ -1,7 +1,9 @@
 from datetime import datetime
+
 from pyspark.sql import SparkSession
-from data import info_cinema, info_ratings
 from pyspark.sql.functions import col
+
+from data import info_cinema, info_ratings
 
 spark = SparkSession \
     .builder \
@@ -33,4 +35,3 @@ def find_top_movie_last_10y():
 def find_top_movie_60s():
     return find_top_movie() \
         .where(col('startYear').between('1960', '1969'))
-
