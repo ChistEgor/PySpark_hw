@@ -20,14 +20,12 @@ def make_window_by_genre():
 
 
 def add_columns():
-    top_movie_each_genre = top_movie() \
+    return top_movie() \
         .withColumn('genre', explode_genre()) \
         .withColumn('row_number', make_window_by_genre())
-    return top_movie_each_genre
 
 
 def find_top_movie_each_genre():
     return add_columns() \
         .where(col('row_number') < 11) \
         .select('tconst', 'primaryTitle', 'startYear', 'genre', 'averageRating', 'numVotes')
-
