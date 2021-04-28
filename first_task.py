@@ -33,3 +33,4 @@ def find_top_movie_last_10y():
 def find_top_movie_60s():
     return find_top_movie() \
         .where(col('startYear').between('1960', '1969'))
+

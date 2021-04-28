@@ -30,3 +30,4 @@ def find_top_movie_each_genre():
     return add_columns() \
         .where(col('row_number') < 11) \
         .select('tconst', 'primaryTitle', 'startYear', 'genre', 'averageRating', 'numVotes')
+

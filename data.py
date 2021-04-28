@@ -18,3 +18,4 @@ info_ratings = read_data('title.ratings.tsv')
 info_staff = read_data('title.principals.tsv')
 info_tv_series = read_data('title.episode.tsv')
 info_director_writer = read_data('title.crew.tsv')
+
