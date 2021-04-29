@@ -9,6 +9,9 @@ table_movie_staff_names = join_table(table_movie_staff, info_names, table_movie_
 
 
 def find_top_actors():
+    """
+    Shows the best actors which have acted more than 1 time
+    """
     return table_movie_staff_names \
         .where(col('category').like('%act%')) \
         .groupby('nconst', 'primaryName').count() \

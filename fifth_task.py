@@ -12,6 +12,9 @@ table_movie_crew_names = table_movie_crew_names.withColumn('row_number', window_
 
 
 def find_top_5_by_directors():
+    """
+    Shows the best five movies of every director
+    """
     return table_movie_crew_names \
         .where(col('row_number') < 6) \
         .orderBy('directors') \
