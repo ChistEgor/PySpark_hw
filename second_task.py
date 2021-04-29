@@ -1,31 +1,20 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, explode, split, row_number
-from pyspark.sql import Window
+from pyspark.sql.functions import col
 
-from first_task import filter_joined_tables as top_movie
+from data_and_functions import top_100_movie, explode_genre, make_window
 
-spark = SparkSession \
-    .builder \
-    .master('local[*]') \
-    .appName('main') \
-    .getOrCreate()
-
-
-def explode_genre():
-    return explode(split(top_movie().genres, ','))
-
-
-def make_window_by_genre():
-    return row_number().over(Window.partitionBy('genre').orderBy(col('averageRating').desc()))
+genre_window = make_window('genre', 'averageRating')
 
 
 def add_columns():
-    return top_movie() \
-        .withColumn('genre', explode_genre()) \
-        .withColumn('row_number', make_window_by_genre())
+    return top_100_movie \
+        .withColumn('genre', explode_genre(top_100_movie.genres)) \
+        .withColumn('row_number', genre_window)
+
+
+table_each_genre = add_columns()
 
 
 def find_top_movie_each_genre():
-    return add_columns() \
+    return table_each_genre \
         .where(col('row_number') < 11) \
         .select('tconst', 'primaryTitle', 'startYear', 'genre', 'averageRating', 'numVotes')

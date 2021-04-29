@@ -1,47 +1,41 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, explode, split, row_number, floor, concat, lit
-from pyspark.sql import Window
+from pyspark.sql.functions import col, concat, lit
 
-from first_task import filter_joined_tables as top_movie
-
-spark = SparkSession \
-    .builder \
-    .master('local[*]') \
-    .appName('main') \
-    .getOrCreate()
+from data_and_functions import top_100_movie, explode_genre as explode_g, make_window
 
 
 def filter_top_movie():
-    return top_movie().where(col('startYear') > 1949)
+    return top_100_movie.where(col('startYear') > 1949)
 
 
-def explode_genre():
-    return explode(split(filter_top_movie().genres, ','))
+top_movie = filter_top_movie()
 
+explode_genre = explode_g(top_movie.genres)
 
-def make_window_by_genre():
-    return row_number().over(Window.partitionBy('genre').orderBy(col('averageRating').desc()))
-
-
-def make_window_by_year_range():
-    return row_number().over(Window.partitionBy('yearRange').orderBy(col('yearRange').desc()))
+year_range_window = make_window('yearRange', 'yearRange')
+genre_window = make_window('genre', 'averageRating')
 
 
 def make_year_range():
-    range_small = (filter_top_movie().startYear - filter_top_movie().startYear % 10).cast('int')
+    range_small = (top_movie.startYear - top_movie.startYear % 10).cast('int')
     return concat(range_small, lit('-'), range_small)
 
 
+year_range = make_year_range()
+
+
 def add_columns():
-    return filter_top_movie() \
-        .withColumn('genre', explode_genre()) \
-        .withColumn('yearRange', make_year_range()) \
-        .withColumn('number_genre', make_window_by_genre()) \
-        .withColumn('number_year_range', make_window_by_year_range())
+    return top_movie \
+        .withColumn('genre', explode_genre) \
+        .withColumn('yearRange', year_range) \
+        .withColumn('number_genre', genre_window) \
+        .withColumn('number_year_range', year_range_window)
+
+
+result_table = add_columns()
 
 
 def find_top_movie_by_year_range():
-    return add_columns() \
+    return result_table \
         .where(col('number_genre') < 11) \
         .select('tconst', 'primaryTitle', 'startYear', 'genre', 'averageRating', 'numVotes', 'yearRange') \
         .orderBy(col('yearRange').desc(), col('genre').asc(), col('number_genre'))

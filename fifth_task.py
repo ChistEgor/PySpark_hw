@@ -1,33 +1,18 @@
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, row_number
-from pyspark.sql import Window
+from pyspark.sql.functions import col
 
-from data import info_names, info_crew
+from data_and_functions import make_window, join_table, top_100_movie, info_crew, info_names
 
-from first_task import filter_joined_tables as top_movie
+window_name = make_window('primaryName', 'averageRating')
 
-spark = SparkSession \
-    .builder \
-    .master('local[*]') \
-    .appName('main') \
-    .getOrCreate()
+table_movie_crew = join_table(top_100_movie, info_crew, top_100_movie.tconst, info_crew.tconst)
 
+table_movie_crew_names = join_table(table_movie_crew, info_names, table_movie_crew.directors, info_names.nconst)
 
-def make_window_by_name():
-    return row_number().over(Window.partitionBy('primaryName').orderBy(col('averageRating').desc()))
-
-
-def join_movie_and_crew():
-    return top_movie().join(info_crew, 'tconst', 'inner')
-
-
-def join_names():
-    return join_movie_and_crew().join(info_names, join_movie_and_crew().directors == info_names.nconst, 'inner') \
-        .withColumn('row_number', make_window_by_name())
+table_movie_crew_names = table_movie_crew_names.withColumn('row_number', window_name)
 
 
 def find_top_5_by_directors():
-    return join_names() \
+    return table_movie_crew_names \
         .where(col('row_number') < 6) \
         .orderBy('directors') \
         .select('primaryName', 'primaryTitle', 'startYear',

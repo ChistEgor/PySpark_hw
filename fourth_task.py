@@ -1,28 +1,16 @@
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import col
 
-from data import info_names, info_staff
-from first_task import filter_joined_tables as top_movie
+from data_and_functions import join_table, top_100_movie, info_names, info_staff
 
-spark = SparkSession \
-    .builder \
-    .master('local[*]') \
-    .appName('main') \
-    .getOrCreate()
+table_movie_staff = join_table(top_100_movie, info_staff, top_100_movie.tconst, info_staff.tconst)
 
-
-def join_movie_and_staff():
-    return top_movie().join(info_staff, 'tconst', 'inner')
-
-
-def join_names():
-    return join_movie_and_staff() \
-        .join(info_names, 'nconst', 'inner')
+table_movie_staff_names = join_table(table_movie_staff, info_names, table_movie_staff.nconst, info_names.nconst) \
+    .drop(info_names.nconst)
 
 
 def find_top_actors():
-    return join_names() \
+    return table_movie_staff_names \
         .where(col('category').like('%act%')) \
-        .groupby('primaryName', 'nconst').count() \
+        .groupby('nconst', 'primaryName').count() \
         .orderBy(col('count').desc()) \
         .select('primaryName')
