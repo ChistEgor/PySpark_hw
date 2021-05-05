@@ -1,20 +1,16 @@
-import first_task
-import second_task
-import third_task
-import fourth_task
-import fifth_task
-
-from data_and_functions import write_to_csv, top_100_movie
+import tasks
+import data
+import functions
 
 if __name__ == '__main__':
-    write_to_csv(first_task.find_top_movie(top_100_movie), '1_1')
-    write_to_csv(first_task.find_top_movie_last_10y(top_100_movie), '1_2')
-    write_to_csv(first_task.find_top_movie_60s(top_100_movie), '1_3')
+    functions.write_to_csv(tasks.get_top_movie(data.top_all_time), '1_1')
+    functions.write_to_csv(tasks.find_top_movie_last_10y(data.top_all_time), '1_2')
+    functions.write_to_csv(tasks.find_top_movie_60s(data.top_all_time), '1_3')
 
-    write_to_csv(second_task.find_top_movie_each_genre(), '2')
+    functions.write_to_csv(tasks.find_top_movie_each_genre(data.top_all_time), '2')
 
-    write_to_csv(third_task.find_top_movie_by_year_range(), '3')
+    functions.write_to_csv(tasks.find_top_movie_by_year_range(data.top_from_1950), '3')
 
-    write_to_csv(fourth_task.find_top_actors(), '4')
+    functions.write_to_csv(tasks.find_top_actors(data.top_all_time), '4')
 
-    write_to_csv(fifth_task.find_top_5_by_directors(), '5')
+    functions.write_to_csv(tasks.find_top_5_by_directors(data.top_all_time), '5')
