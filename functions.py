@@ -32,12 +32,12 @@ def join_table(left_df, right_df, condition, how='inner'):
 
 def find_top_movie(info_cinema, info_ratings):
     """
-    Filters each movie and return the top 100
+    Filters each movie by numVotes
     """
     return info_cinema \
         .join(info_ratings, 'tconst', 'inner') \
         .where((col('titleType') == 'movie') & (col('numVotes') >= 100000)) \
-        .orderBy(col('averageRating').desc()).limit(100)
+        .orderBy(col('averageRating').desc())
 
 
 def explode_by_genres(df):

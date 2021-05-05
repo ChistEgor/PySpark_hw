@@ -3,7 +3,7 @@ from datetime import datetime
 from pyspark.sql.functions import col
 
 import functions as f
-import data
+import main
 
 
 # 1
@@ -11,7 +11,7 @@ def get_top_movie(df):
     """
     Shows the top 100 films
     """
-    return df.select('tconst', 'primaryTitle', 'numVotes', 'averageRating', 'startYear')
+    return df.select('tconst', 'primaryTitle', 'numVotes', 'averageRating', 'startYear').limit(100)
 
 
 def find_top_movie_last_10y(df):
@@ -19,7 +19,7 @@ def find_top_movie_last_10y(df):
     Filters out the dataframe from the last 10 years
     """
     return df.where(col('startYear') >= datetime.now().year - 10) \
-        .select('tconst', 'primaryTitle', 'numVotes', 'averageRating', 'startYear')
+        .select('tconst', 'primaryTitle', 'numVotes', 'averageRating', 'startYear').limit(100)
 
 
 def find_top_movie_60s(df):
@@ -27,7 +27,7 @@ def find_top_movie_60s(df):
     Shows the top films of the 60s
     """
     return df.where(col('startYear').between(1960, 1969)) \
-        .select('tconst', 'primaryTitle', 'numVotes', 'averageRating', 'startYear')
+        .select('tconst', 'primaryTitle', 'numVotes', 'averageRating', 'startYear').limit(100)
 
 
 # 2
@@ -47,6 +47,7 @@ def find_top_movie_by_year_range(df):
     """
     Finding the top movie in every decade beginning with 1950 years
     """
+    df = df.where(col('startYear') > 1949)
     df = f.explode_by_genres(df)
     df = f.make_year_range(df)
     df = f.row_number_window(df, 'year_range', 'year_range', 'number_year_range')
@@ -63,8 +64,8 @@ def find_top_actors(df):
     """
     Shows the best actors which have acted more than 1 time
     """
-    df = f.join_table(df, data.info_staff, 'tconst')
-    df = f.join_table(df, data.info_names, 'nconst')
+    df = f.join_table(df, main.info_staff, 'tconst')
+    df = f.join_table(df, main.info_names, 'nconst')
 
     return df \
         .where(col('category').like('%act%')) \
@@ -78,8 +79,8 @@ def find_top_5_by_directors(df):
     """
     Shows the best five movies of every director
     """
-    df = f.join_table(df, data.info_crew, 'tconst')
-    df = f.join_table(df, data.info_names, df.directors == data.info_names.nconst)
+    df = f.join_table(df, main.info_crew, 'tconst')
+    df = f.join_table(df, main.info_names, df.directors == main.info_names.nconst)
     df = f.row_number_window(df, 'primaryName', 'averageRating', 'row_number')
 
     return df \
