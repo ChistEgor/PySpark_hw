@@ -20,7 +20,7 @@ def write_to_csv(data, file):
     """
     Makes one dataframe from group of and saves to file
     """
-    return data.coalesce(1).write.mode('overwrite').save(f'output_data/{file}', format='csv')
+    return data.coalesce(1).write.option('header', 'true').mode('overwrite').save(f'output_data/{file}', format='csv')
 
 
 def join_table(left_df, right_df, condition, how='inner'):
