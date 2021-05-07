@@ -55,13 +55,6 @@ def row_number_window(df, partition, column_order, name_column):
     return df.withColumn(name_column, row_number().over(window))
 
 
-def filter_top_movie(df):
-    """
-    Only films from 1949 until now
-    """
-    return df.where(col('startYear') > 1949)
-
-
 def make_year_range(df):
     """
     Brakes each films by decade
