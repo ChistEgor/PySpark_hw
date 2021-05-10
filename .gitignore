@@ -1,5 +1,11 @@
 .idea/
 __pycache__/
+<<<<<<< HEAD
 /venv
 /input_data
 /output_data
+=======
+input_data/
+output_data/
+venv/
+>>>>>>> ffde9ad648394c8452ea54a1281ffa5f88780ac2
