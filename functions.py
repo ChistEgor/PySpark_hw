@@ -20,7 +20,7 @@ def write_to_csv(data, file):
     """
     Makes one dataframe from group of and saves to file
     """
-    return data.coalesce(1).write.mode('overwrite').save(f'output_data/{file}', format='csv')
+    return data.coalesce(1).write.option('header', 'true').mode('overwrite').save(f'output_data/{file}', format='csv')
 
 
 def join_table(left_df, right_df, condition, how='inner'):
@@ -53,13 +53,6 @@ def row_number_window(df, partition, column_order, name_column):
     """
     window = Window.partitionBy(partition).orderBy(col(column_order).desc())
     return df.withColumn(name_column, row_number().over(window))
-
-
-def filter_top_movie(df):
-    """
-    Only films from 1949 until now
-    """
-    return df.where(col('startYear') > 1949)
 
 
 def make_year_range(df):

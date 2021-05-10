@@ -3,7 +3,6 @@ from datetime import datetime
 from pyspark.sql.functions import col
 
 import functions as f
-import main
 
 
 # 1
@@ -60,12 +59,12 @@ def find_top_movie_by_year_range(df):
 
 
 # 4
-def find_top_actors(df):
+def find_top_actors(df, info_staff, info_names):
     """
     Shows the best actors which have acted more than 1 time
     """
-    df = f.join_table(df, main.info_staff, 'tconst')
-    df = f.join_table(df, main.info_names, 'nconst')
+    df = f.join_table(df, info_staff, 'tconst')
+    df = f.join_table(df, info_names, 'nconst')
 
     return df \
         .where(col('category').like('%act%')) \
@@ -75,12 +74,12 @@ def find_top_actors(df):
 
 
 # 5
-def find_top_5_by_directors(df):
+def find_top_5_by_directors(df, info_crew, info_names):
     """
     Shows the best five movies of every director
     """
-    df = f.join_table(df, main.info_crew, 'tconst')
-    df = f.join_table(df, main.info_names, df.directors == main.info_names.nconst)
+    df = f.join_table(df, info_crew, 'tconst')
+    df = f.join_table(df, info_names, df.directors == info_names.nconst)
     df = f.row_number_window(df, 'primaryName', 'averageRating', 'row_number')
 
     return df \
